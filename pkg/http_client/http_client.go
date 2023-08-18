@@ -2,10 +2,11 @@ package httpclient
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/dathuynh1108/clean-arch-base/pkg/comjson"
 )
 
 type HTTPClient struct {
@@ -17,7 +18,7 @@ func NewHTTPClient(path string) *HTTPClient {
 }
 
 func (h *HTTPClient) Request(method string, body any, headers map[string]string) (respBody []byte, err error) {
-	jsonBody, err := json.Marshal(body)
+	jsonBody, err := comjson.Marshal(body)
 	if err != nil {
 		return
 	}
