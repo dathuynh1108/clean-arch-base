@@ -1,11 +1,14 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/usecase"
 	"github.com/gofiber/fiber/v2"
 )
 
 type HealthControler struct {
+	controller
 	uc usecase.HealthUsecase
 }
 
@@ -19,5 +22,5 @@ func NewHealthController(
 
 func (h *HealthControler) GetHealth(ctx *fiber.Ctx) error {
 	reply := h.uc.GetHealth()
-	return ctx.SendString(reply)
+	return h.OK(ctx, http.StatusOK, "OK", reply)
 }
