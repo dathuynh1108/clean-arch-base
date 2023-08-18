@@ -1,6 +1,11 @@
 package httpdelivery
 
-func (h *httpDelivery) initRoute() error {
+import "github.com/gofiber/fiber/v2/middleware/recover"
+
+func (h *httpDelivery) initRoute() {
 	h.app.Get("/health/get", h.healthController.GetHealth)
-	return nil
+}
+
+func (h *httpDelivery) initDefaulltMiddleware() {
+	h.app.Use(recover.New())
 }

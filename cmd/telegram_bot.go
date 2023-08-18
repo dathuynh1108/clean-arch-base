@@ -9,13 +9,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var httpCMD = &cobra.Command{
-	Use:   "http",
-	Short: "Serve HTTP API service",
+var telegramBotCMD = &cobra.Command{
+	Use:   "telegram_bot",
+	Short: "Start telegram bot delivery",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("HTTP started")
+		fmt.Println("Telegram bot started")
 
-		internal.StartHTTPServer()
+		internal.StartTelegramBot()
 
 		quitChan := make(chan os.Signal)
 		signal.Notify(quitChan, os.Interrupt)
