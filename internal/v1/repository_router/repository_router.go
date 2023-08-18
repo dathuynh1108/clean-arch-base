@@ -26,7 +26,7 @@ type repositoryRouter[Repo any] struct {
 func (r *repositoryRouter[Repo]) GetRepo(alias string) Repo {
 	r.mux.RLock()
 	defer r.mux.RUnlock()
-	return r.mapper[alias][r.score[alias].Add(1)]
+	return r.mapper[alias][r.score[alias].Add(1)%uint32(len(r.mapper[alias]))]
 }
 
 func (r *repositoryRouter[Repo]) GetRepoForce(alias string, index uint32) Repo {
