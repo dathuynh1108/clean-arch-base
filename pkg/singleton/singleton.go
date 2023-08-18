@@ -19,15 +19,18 @@ func NewSingleton[T any](loader func() T) *Singleton[T] {
 }
 
 func (s *Singleton[T]) Get() T {
-	s.mux.Lock()
-	defer s.mux.Unlock()
 	if s.isLoaded {
 		return s.instance
 	}
 
+	s.mux.Lock()
+	defer s.mux.Unlock()
+
+	// Check again because another process can init this
 	if !s.isLoaded {
 		s.instance = s.loader()
 		s.isLoaded = true
 	}
+
 	return s.instance
 }
