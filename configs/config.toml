@@ -1,0 +1,12 @@
+[server]
+host = "0.0.0.0"
+port = "8080"
+
+[redis]
+addrs = "0.0.0.0:6379"
+db = "0"
+username = ""
+password = ""
+
+[telegram]
+api_key = "5947277491:AAF0eYpYHfgm9rTkFXmFKSPlR3W3Z5gQ5C8"

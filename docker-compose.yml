@@ -1,0 +1,19 @@
+version: '3'
+services:  
+  redis:
+    image: "redis"
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory-policy allkeys-lru --maxmemory 10M
+    restart: always
+  
+  http-server:
+    image: golang:alpine
+    volumes:
+      - ./:/app
+      - ~/go:/go
+    working_dir: /app
+    command: >
+      sh -c "go run main.go service http --config-path=/app/configs/config.yaml"
+    ports:
+      - 8080:8080
