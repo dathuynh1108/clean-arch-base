@@ -10,7 +10,11 @@ import (
 )
 
 func StartHTTPServer() {
-	httpdelivery.ServeHTTP("0.0.0.0", "3000")
+	serverConfig := config.GetConfig().ServerConfig
+	err := httpdelivery.ServeHTTP(serverConfig.Host, serverConfig.Port)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func StartTelegramBot() {
