@@ -18,9 +18,6 @@ type RedisConfig struct {
 	Password string   `mapstructure:"password"`
 	DB       int      `mapstructure:"db"`
 }
-type TelegramConfig struct {
-	APIKey string `mapstructure:"api_key"`
-}
 
 type DatabaseConfig struct {
 	Engine   string `mapstructure:"engine"`
@@ -29,11 +26,11 @@ type DatabaseConfig struct {
 	Username string `mapstructure:"user"`
 	Password string `mapstructure:"pass"`
 	Database string `mapstructure:"database"`
+	Instance string `mapstructure:"instance"`
 }
 
 type Config struct {
 	ServerConfig    ServerConfig                `mapstructure:"server"`
-	TelegramConfig  TelegramConfig              `mapstructure:"telegram"`
 	RedisConfig     RedisConfig                 `mapstructure:"redis"`
 	DatabasesConfig map[string][]DatabaseConfig `mapstructure:"databases"`
 }
@@ -52,6 +49,9 @@ func InitConfig(path string) error {
 		}
 		if err := viper.Unmarshal(&config); err != nil {
 			panic(err)
+		}
+		for key, db := range config.DatabasesConfig {
+			fmt.Println(key, db)
 		}
 		return config
 	})

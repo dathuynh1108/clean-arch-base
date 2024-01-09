@@ -1,12 +1,15 @@
 package dbpool
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
-func BuildAlias(alias, instanceAlias string) string {
-	return alias + "." + instanceAlias
+func BuildAlias(alias DBAlias, instanceAlias string) string {
+	return fmt.Sprintf("%s.%s", alias, instanceAlias)
 }
 
-func ParseAlias(alias string) (string, string) {
+func ParseAlias(alias string) (DBAlias, string) {
 	parts := strings.Split(alias, ".")
-	return parts[0], parts[1]
+	return DBAlias(parts[0]), parts[1]
 }

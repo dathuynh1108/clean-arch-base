@@ -5,6 +5,7 @@ import (
 
 	messagqqueue "github.com/dathuynh1108/clean-arch-base/internal/message_queue"
 	"github.com/dathuynh1108/clean-arch-base/pkg/config"
+	"github.com/dathuynh1108/clean-arch-base/pkg/database"
 	redisclient "github.com/dathuynh1108/clean-arch-base/pkg/redis_client"
 	"github.com/spf13/cobra"
 )
@@ -36,6 +37,11 @@ func initBaseServices() {
 	}
 
 	err = redisclient.InitRedis()
+	if err != nil {
+		panic(err)
+	}
+
+	err = database.InitDatabase()
 	if err != nil {
 		panic(err)
 	}

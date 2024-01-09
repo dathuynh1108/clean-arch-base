@@ -8,5 +8,43 @@ db = "0"
 username = ""
 password = ""
 
-[telegram]
-api_key = "5947277491:AAF0eYpYHfgm9rTkFXmFKSPlR3W3Z5gQ5C8"
+
+[[databases.default]]
+engine = "mysql"
+host = "localhost"
+port = "3306"
+user = "user1"
+pass = "pass1"
+database = "db1"
+instance = "master"
+
+[[databases.default]]
+engine = "postgresql"
+host = "localhost"
+port = "3306"
+user = "user1"
+pass = "pass1"
+database = "db2"
+instance = "master"
+
+[[databases.default]]
+engine = "mysql"
+host = "localhost"
+port = "3306"
+user = "user1"
+pass = "pass1"
+database = "db1"
+instance = "master"
+
+[[databases.default]]
+engine = "postgresql"
+host = "localhost"
+port = "3306"
+user = "user1"
+pass = "pass1"
+database = "db2"
+instance = "master"
+
+
+
+

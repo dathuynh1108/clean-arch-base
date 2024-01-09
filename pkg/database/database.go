@@ -10,13 +10,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitDatabase() {
+func InitDatabase() error {
 	// Init db connection here
 	// Format database.master or database.replica
 	config := config.GetConfig()
 	for alias, databases := range config.DatabasesConfig {
 		for _, database := range databases {
-			log.Println("--> Init database:", alias)
+			log.Printf(`--> Init database alias: %v, engine: %v, instance: %v`, alias, database.Engine, database.Instance)
 			var dialector gorm.Dialector
 			switch database.Engine {
 			case EngineMySQL:
@@ -32,21 +32,33 @@ func InitDatabase() {
 				dialector = mysql.Open(dsn)
 
 			case EngineSQLite:
-
 			case EnginePostgres:
+				// dsn := fmt.Sprintf(
+				// 	"host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Ho_Chi_Minh",
+				// 	database.Host,
+				// 	database.Username,
+				// 	database.Password,
+				// 	database.Database,
+				// 	database.Port,
+				// )
+				// dialector = postgres.Open(dsn)
 			default:
-				panic(fmt.Sprintf("Unsupported database engine: %v", database.Engine))
+				return fmt.Errorf("unsupported database engine: %v", database.Engine)
 			}
 
 			connection, err := gorm.Open(dialector, &gorm.Config{})
 			if err != nil {
-				panic(err)
+				return err
 			}
 
-			dbPool.SetDB(alias, connection)
+			if database.Instance != dbpool.AliasMaster && database.Instance != dbpool.AliasReplica {
+				return fmt.Errorf(`unsupported database instance, want "master" or "replica", got : "%v"`, database.Instance)
+			}
+
+			dbPool.SetDB(dbpool.BuildAlias(dbpool.DBAlias(alias), database.Instance), connection)
 		}
 	}
-
+	return nil
 }
 
 var (

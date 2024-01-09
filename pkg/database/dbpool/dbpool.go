@@ -6,8 +6,8 @@ import (
 )
 
 type DBPool[DB any] interface {
-	GetMaster(alias string) DB
-	GetReplica(alias string) DB
+	GetMaster(alias DBAlias) DB
+	GetReplica(alias DBAlias) DB
 	GetDB(alias string) DB
 	GetDBForce(alias string, index uint32) DB
 	SetDB(alias string, repo DB)
@@ -26,11 +26,11 @@ type dbPool[DB any] struct {
 	score  map[string]*atomic.Uint32
 }
 
-func (r *dbPool[DB]) GetMaster(alias string) DB {
+func (r *dbPool[DB]) GetMaster(alias DBAlias) DB {
 	return r.GetDB(BuildAlias(alias, AliasMaster))
 }
 
-func (r *dbPool[DB]) GetReplica(alias string) DB {
+func (r *dbPool[DB]) GetReplica(alias DBAlias) DB {
 	return r.GetDB(BuildAlias(alias, AliasMaster))
 }
 

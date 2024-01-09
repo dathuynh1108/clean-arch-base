@@ -1,7 +1,13 @@
 package dbpool
 
 const (
-	AliasDefault = "default"
 	AliasMaster  = "master"
 	AliasReplica = "replica"
+)
+
+type DBAlias string
+
+const (
+	// Specific db connections alias here
+	DBDefault DBAlias = "default"
 )

@@ -15,7 +15,7 @@ type RepoRouter[Repo any] interface {
 }
 
 func NewRepoRouter[Repo any](
-	dbAlias string,
+	dbAlias dbpool.DBAlias,
 	dbPool dbpool.DBPool[*gorm.DB],
 	repoCreator func(db *gorm.DB) Repo,
 ) RepoRouter[Repo] {
@@ -27,7 +27,7 @@ func NewRepoRouter[Repo any](
 }
 
 type repoRouter[Repo any] struct {
-	dbAlias     string
+	dbAlias     dbpool.DBAlias
 	dbPool      dbpool.DBPool[*gorm.DB]
 	repoCreator func(db *gorm.DB) Repo
 }

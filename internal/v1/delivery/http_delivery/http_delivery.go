@@ -9,6 +9,7 @@ import (
 	"github.com/dathuynh1108/clean-arch-base/pkg/comjson"
 	"github.com/dathuynh1108/clean-arch-base/pkg/config"
 	"github.com/dathuynh1108/clean-arch-base/pkg/database"
+	"github.com/dathuynh1108/clean-arch-base/pkg/database/dbpool"
 	"github.com/dathuynh1108/clean-arch-base/pkg/database/repo"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -24,7 +25,7 @@ func ServeHTTP(host, port string) error {
 
 	// Repository
 	healthRepoRouter := repo.NewRepoRouter(
-		database.DBDefault,
+		dbpool.DBDefault,
 		database.ProvideDBPool(),
 		func(db *gorm.DB) *repository.HealthRepository {
 			return repository.NewHealthRepository(db)

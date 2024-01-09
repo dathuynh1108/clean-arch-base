@@ -17,7 +17,7 @@ var httpCMD = &cobra.Command{
 
 		internal.StartHTTPServer()
 
-		quitChan := make(chan os.Signal)
+		quitChan := make(chan os.Signal, 1)
 		signal.Notify(quitChan, os.Interrupt)
 		<-quitChan
 	},
