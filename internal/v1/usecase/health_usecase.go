@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/repository"
-	repositoryrouter "github.com/dathuynh1108/clean-arch-base/internal/v1/repository_router"
+	"github.com/dathuynh1108/clean-arch-base/pkg/database/repo"
 )
 
 type HealthUsecase interface {
@@ -10,7 +10,7 @@ type HealthUsecase interface {
 }
 
 func NewHealthUsecase(
-	healthRepoRouter repositoryrouter.RepositoryRouter[*repository.HealthRepository],
+	healthRepoRouter repo.RepoRouter[*repository.HealthRepository],
 ) HealthUsecase {
 	return &healthUsecase{
 		healthRepoRouter: healthRepoRouter,
@@ -18,7 +18,7 @@ func NewHealthUsecase(
 }
 
 type healthUsecase struct {
-	healthRepoRouter repositoryrouter.RepositoryRouter[*repository.HealthRepository]
+	healthRepoRouter repo.RepoRouter[*repository.HealthRepository]
 }
 
 func (h *healthUsecase) GetHealth() string {

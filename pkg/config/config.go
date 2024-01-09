@@ -22,10 +22,20 @@ type TelegramConfig struct {
 	APIKey string `mapstructure:"api_key"`
 }
 
+type DatabaseConfig struct {
+	Engine   string `mapstructure:"engine"`
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	Username string `mapstructure:"user"`
+	Password string `mapstructure:"pass"`
+	Database string `mapstructure:"database"`
+}
+
 type Config struct {
-	ServerConfig   ServerConfig   `mapstructure:"server"`
-	TelegramConfig TelegramConfig `mapstructure:"telegram"`
-	RedisConfig    RedisConfig    `mapstructure:"redis"`
+	ServerConfig    ServerConfig                `mapstructure:"server"`
+	TelegramConfig  TelegramConfig              `mapstructure:"telegram"`
+	RedisConfig     RedisConfig                 `mapstructure:"redis"`
+	DatabasesConfig map[string][]DatabaseConfig `mapstructure:"databases"`
 }
 
 var (

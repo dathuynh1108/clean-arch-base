@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ValidatorSingleton = singleton.NewSingleton(func() *Validator { return NewValidator() })
+	validatorSingleton = singleton.NewSingleton(func() *Validator { return NewValidator() })
 )
 
 type ValidateError struct {
@@ -34,7 +34,7 @@ func NewValidator() *Validator {
 }
 
 func GetValidator() *Validator {
-	return ValidatorSingleton.Get()
+	return validatorSingleton.Get()
 }
 
 func (v *Validator) init() {

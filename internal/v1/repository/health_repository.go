@@ -3,9 +3,11 @@ package repository
 import "gorm.io/gorm"
 
 type HealthRepository struct {
-	db *gorm.DB
+	baseRepository
 }
 
 func NewHealthRepository(db *gorm.DB) *HealthRepository {
-	return &HealthRepository{db}
+	return &HealthRepository{
+		baseRepository: baseRepository{db},
+	}
 }

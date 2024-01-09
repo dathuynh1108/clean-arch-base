@@ -12,11 +12,11 @@ type MessageQueue interface {
 }
 
 var (
-	MessageQueueSigleton *singleton.Singleton[MessageQueue]
+	messageQueueSigleton *singleton.Singleton[MessageQueue]
 )
 
-func InitMessageQueue() {
-	MessageQueueSigleton = singleton.NewSingleton[MessageQueue](func() MessageQueue {
+func InitMessageQueue() error {
+	messageQueueSigleton = singleton.NewSingleton[MessageQueue](func() MessageQueue {
 		redisClient := redisclient.GetRedis()
 		msgQueue, err := NewRedisMessageQueue(redisClient)
 		if err != nil {
@@ -24,8 +24,9 @@ func InitMessageQueue() {
 		}
 		return msgQueue
 	})
+	return nil
 }
 
 func GetMessageQueue() MessageQueue {
-	return MessageQueueSigleton.Get()
+	return messageQueueSigleton.Get()
 }

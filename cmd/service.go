@@ -25,13 +25,20 @@ func init() {
 	rootCMD.AddCommand(serviceCMD)
 
 	serviceCMD.AddCommand(httpCMD)
-	serviceCMD.AddCommand(telegramBotCMD)
 
 	serviceCMD.PersistentFlags().String("config-path", "./configs/config.toml", "Config file path")
 }
 
 func initBaseServices() {
-	config.InitConfig(configPath)
-	redisclient.InitRedis()
+	err := config.InitConfig(configPath)
+	if err != nil {
+		panic(err)
+	}
+
+	err = redisclient.InitRedis()
+	if err != nil {
+		panic(err)
+	}
+
 	messagqqueue.InitMessageQueue()
 }
