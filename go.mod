@@ -6,12 +6,12 @@ require (
 	github.com/adjust/rmq/v5 v5.2.0
 	github.com/bytedance/sonic v1.10.0
 	github.com/go-playground/validator/v10 v10.15.1
-	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/gofiber/fiber/v2 v2.48.0
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
+	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.25.3
 )
 
@@ -63,5 +63,4 @@ require (
 	golang.org/x/text v0.9.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/mysql v1.5.2 // indirect
 )
