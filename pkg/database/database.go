@@ -55,16 +55,16 @@ func InitDatabase() error {
 				return fmt.Errorf(`unsupported database instance, want "master" or "replica", got : "%v"`, database.Instance)
 			}
 
-			dbPool.SetDB(dbpool.BuildAlias(dbpool.DBAlias(alias), database.Instance), connection)
+			dbPool.SetDB(dbpool.BuildAlias(dbpool.DBAlias(alias), database.Instance), dbpool.NewDB(connection))
 		}
 	}
 	return nil
 }
 
 var (
-	dbPool = dbpool.NewDBPool[*gorm.DB]()
+	dbPool = dbpool.NewDBPool()
 )
 
-func ProvideDBPool() dbpool.DBPool[*gorm.DB] {
+func ProvideDBPool() dbpool.DBPool {
 	return dbPool
 }
