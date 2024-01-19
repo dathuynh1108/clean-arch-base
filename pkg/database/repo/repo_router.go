@@ -11,7 +11,7 @@ import (
 type RepoRouter[Repo any] interface {
 	FromMaster(ctx context.Context) Repo
 	FromReplica(ctx context.Context) Repo
-	Transaction(ctx context.Context, execute func(ctx context.Context, db *gorm.DB) error) error
+	Transaction(ctx context.Context, execute func(ctx context.Context, tx Repo) error) error
 }
 
 func NewRepoRouter[Repo any](
@@ -40,10 +40,11 @@ func (r *repoRouter[Repo]) FromReplica(ctx context.Context) Repo {
 	return r.repoCreator(r.dbPool.GetReplica(r.dbAlias).WithContext(ctx).DB)
 }
 
-func (r *repoRouter[Repo]) Transaction(ctx context.Context, execute func(ctx context.Context, db *gorm.DB) error) error {
+func (r *repoRouter[Repo]) Transaction(ctx context.Context, execute func(ctx context.Context, tx Repo) error) error {
 	// Check current ctx have transaction or not
-	creator := func() *gorm.DB {
-		return r.dbPool.GetDB(dbpool.AliasMaster).WithContext(ctx).DB
+	wrapRepo := func(ctx context.Context, db *gorm.DB) error {
+		txRepo := r.repoCreator(db)
+		return execute(ctx, txRepo)
 	}
-	return transaction.Transaction(ctx, execute, creator, nil)
+	return transaction.Transaction(ctx, r.dbAlias, wrapRepo, nil)
 }
