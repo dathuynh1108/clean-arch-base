@@ -4,15 +4,10 @@ import (
 	"fmt"
 
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/delivery/http_delivery/controller"
-	"github.com/dathuynh1108/clean-arch-base/internal/v1/repository"
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/usecase"
 	"github.com/dathuynh1108/clean-arch-base/pkg/comjson"
 	"github.com/dathuynh1108/clean-arch-base/pkg/config"
-	"github.com/dathuynh1108/clean-arch-base/pkg/database"
-	"github.com/dathuynh1108/clean-arch-base/pkg/database/dbpool"
-	"github.com/dathuynh1108/clean-arch-base/pkg/database/repo"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 )
 
 type httpDelivery struct {
@@ -23,17 +18,8 @@ type httpDelivery struct {
 func ServeHTTP(host, port string) error {
 	config := config.GetConfig()
 
-	// Repository
-	healthRepoRouter := repo.NewRepoRouter(
-		dbpool.DBDefault,
-		database.ProvideDBPool(),
-		func(db *gorm.DB) *repository.HealthRepository {
-			return repository.NewHealthRepository(db)
-		},
-	)
-
-	// Usecase
-	healthUC := usecase.NewHealthUsecase(healthRepoRouter)
+	// Inject healthUC
+	healthUC := usecase.ProvideHealthUsecase()
 
 	// Controller
 	errorController := controller.NewErrorController()
