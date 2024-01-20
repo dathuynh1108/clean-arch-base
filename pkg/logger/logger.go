@@ -51,22 +51,29 @@ func getLevel(level string) logrus.Level {
 }
 
 func getFormatter(format string) logrus.Formatter {
+	timeFormat := "2006-01-02T15:04:05.000"
+	hostName := os.Getenv("HOSTNAME")
+	if hostName == "" {
+		hostName = "SERVER"
+	}
+
 	switch format {
 	case "json":
 		return &logrus.JSONFormatter{
 			PrettyPrint:     true,
-			TimestampFormat: "2006-01-02T15:04:05.000",
+			TimestampFormat: timeFormat,
 		}
 	case "text":
 		return &TextFormatter{
 			FullTimestamp:   true,
-			TimestampFormat: "2006-01-02T15:04:05.000",
+			TimestampFormat: timeFormat,
 			ForceFormatting: true,
+			Name:            hostName,
 		}
 	default:
 		return &logrus.TextFormatter{
 			FullTimestamp:   true,
-			TimestampFormat: "2006-01-02T15:04:05.000",
+			TimestampFormat: timeFormat,
 		}
 	}
 }

@@ -116,6 +116,9 @@ type TextFormatter struct {
 	// Whether the logger's out is to a terminal.
 	isTerminal bool
 
+	// Name for this logger instance
+	Name string
+
 	sync.Once
 }
 
@@ -205,10 +208,12 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 		}
 		f.printColored(b, entry, keys, timestampFormat, colorScheme)
 	} else {
+		f.appendKeyValue(b, "level", entry.Level.String(), true)
 		if !f.DisableTimestamp {
 			f.appendKeyValue(b, "time", entry.Time.Format(timestampFormat), true)
 		}
-		f.appendKeyValue(b, "level", entry.Level.String(), true)
+		f.appendKeyValue(b, "name", f.Name, true)
+
 		if entry.Message != "" {
 			f.appendKeyValue(b, "msg", entry.Message, lastKeyIdx >= 0)
 		}
@@ -277,7 +282,7 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *logrus.Entry, keys 
 		} else {
 			timestamp = entry.Time.Format(timestampFormat)
 		}
-		fmt.Fprintf(b, "%s%s -%s "+messageFormat, "["+level+"]", "["+colorScheme.TimestampColor(timestamp)+"]", prefix, message)
+		fmt.Fprintf(b, "%s%s%s -%s "+messageFormat, "["+level+"]", "["+colorScheme.TimestampColor(timestamp)+"]", "["+f.Name+"]", prefix, message)
 	}
 	for _, k := range keys {
 		if k != "prefix" {

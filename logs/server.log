@@ -1,2 +1,2 @@
-[INFO][2024-01-20T18:50:42.521] - Init logger successfully!
-[INFO][2024-01-20T18:50:42.521] - Init database alias: default, engine: mysql, instance: master
+[INFO][2024-01-20T19:43:47.441][SERVER] - Init logger successfully!
+[INFO][2024-01-20T19:43:47.442][SERVER] - Init database alias: default, engine: mysql, instance: master
