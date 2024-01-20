@@ -9,6 +9,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type Controller interface {
+	BindAndValidate(ctx *fiber.Ctx, data any) error
+	OK(ctx *fiber.Ctx, code int, message any, data any) error
+	OKEmpty(ctx *fiber.Ctx) error
+	Failure(ctx *fiber.Ctx, httpCode int, code int, message any, errors []error) error
+	InitControllerGroup(app fiber.Router)
+}
+
 type controller struct{}
 
 func (c *controller) BindAndValidate(ctx *fiber.Ctx, data any) error {

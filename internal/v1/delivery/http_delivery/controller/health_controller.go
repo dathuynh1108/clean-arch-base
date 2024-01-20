@@ -20,6 +20,10 @@ func NewHealthController(
 	}
 }
 
+func (h *HealthControler) InitControllerGroup(app fiber.Router) {
+	app.Get("/health/get", h.GetHealth)
+}
+
 func (h *HealthControler) GetHealth(ctx *fiber.Ctx) error {
 	reply := h.uc.GetHealth()
 	return h.OK(ctx, http.StatusOK, "OK", reply)
