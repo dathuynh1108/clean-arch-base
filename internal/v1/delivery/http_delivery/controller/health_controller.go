@@ -24,7 +24,14 @@ func (h *HealthControler) InitControllerGroup(app fiber.Router) {
 	app.Get("/health/*", h.GetHealth)
 }
 
-func (h *HealthControler) GetHealth(ctx *fiber.Ctx) error {
-	reply := h.uc.GetHealth()
-	return h.OK(ctx, http.StatusOK, "OK", reply)
+func (h *HealthControler) GetHealth(c *fiber.Ctx) (err error) {
+	if err = h.BindAndValidate(c, nil); err != nil {
+		return err
+	}
+	var (
+		ctx = c.Context()
+	)
+
+	reply := h.uc.GetHealth(ctx)
+	return h.OK(c, http.StatusOK, "OK", reply)
 }

@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/repository"
 	"github.com/dathuynh1108/clean-arch-base/pkg/database/repo"
 	"github.com/google/wire"
@@ -14,7 +16,7 @@ var (
 )
 
 type HealthUsecase interface {
-	GetHealth() string
+	GetHealth(ctx context.Context) string
 }
 
 func NewHealthUsecase(
@@ -29,6 +31,6 @@ type healthUsecase struct {
 	healthRepoRouter repo.RepoRouter[repository.HealthRepository]
 }
 
-func (h *healthUsecase) GetHealth() string {
+func (h *healthUsecase) GetHealth(ctx context.Context) string {
 	return "Hello, World 👋👋👋!"
 }
