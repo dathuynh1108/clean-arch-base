@@ -275,7 +275,7 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *logrus.Entry, keys 
 		if !f.FullTimestamp {
 			timestamp = fmt.Sprintf("%04d", miniTS())
 		} else {
-			timestamp = fmt.Sprintf("%s", entry.Time.Format(timestampFormat))
+			timestamp = entry.Time.Format(timestampFormat)
 		}
 		fmt.Fprintf(b, "%s%s -%s "+messageFormat, "["+level+"]", "["+colorScheme.TimestampColor(timestamp)+"]", prefix, message)
 	}
@@ -304,7 +304,7 @@ func (f *TextFormatter) needsQuoting(text string) bool {
 
 func extractPrefix(msg string) (string, string) {
 	prefix := ""
-	regex := regexp.MustCompile("^\\[(.*?)\\]")
+	regex := regexp.MustCompile(`^\[(.*?)\]`)
 	if regex.MatchString(msg) {
 		match := regex.FindString(msg)
 		prefix, msg = match[1:len(match)-1], strings.TrimSpace(msg[len(match):])
