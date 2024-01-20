@@ -54,3 +54,7 @@ func (c *controller) Failure(ctx *fiber.Ctx, httpCode int, code int, message any
 			Errors:  errors,
 		})
 }
+
+func (c *controller) InitControllerGroup(app fiber.Router) {
+	panic("InitControllerGroup is not implemented")
+}

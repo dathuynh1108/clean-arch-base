@@ -21,7 +21,7 @@ func NewHealthController(
 }
 
 func (h *HealthControler) InitControllerGroup(app fiber.Router) {
-	app.Get("/health/get", h.GetHealth)
+	app.Get("/health/*", h.GetHealth)
 }
 
 func (h *HealthControler) GetHealth(ctx *fiber.Ctx) error {
