@@ -45,6 +45,9 @@ pass = "pass1"
 database = "db2"
 instance = "master"
 
-
+[logger]
+level = "debug"
+file_path = "./logs/server.log"
+format = "text"
 
 

@@ -2,10 +2,10 @@ package database
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/dathuynh1108/clean-arch-base/pkg/config"
 	"github.com/dathuynh1108/clean-arch-base/pkg/database/dbpool"
+	"github.com/dathuynh1108/clean-arch-base/pkg/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -16,7 +16,7 @@ func InitDatabase() error {
 	config := config.GetConfig()
 	for alias, databases := range config.DatabasesConfig {
 		for _, database := range databases {
-			log.Printf(`--> Init database alias: %v, engine: %v, instance: %v`, alias, database.Engine, database.Instance)
+			logger.GetLogger().Infof("Init database alias: %v, engine: %v, instance: %v", alias, database.Engine, database.Instance)
 			var dialector gorm.Dialector
 			switch database.Engine {
 			case EngineMySQL:

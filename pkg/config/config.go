@@ -29,10 +29,17 @@ type DatabaseConfig struct {
 	Instance string `mapstructure:"instance"`
 }
 
+type LoggerConfig struct {
+	Level    string `mapstructure:"level"`
+	FilePath string `mapstructure:"file_path"`
+	Format   string `mapstructure:"format"`
+}
+
 type Config struct {
 	ServerConfig    ServerConfig                `mapstructure:"server"`
 	RedisConfig     RedisConfig                 `mapstructure:"redis"`
 	DatabasesConfig map[string][]DatabaseConfig `mapstructure:"databases"`
+	LoggerConfig    LoggerConfig                `mapstructure:"logger"`
 }
 
 var (
@@ -49,9 +56,6 @@ func InitConfig(path string) error {
 		}
 		if err := viper.Unmarshal(&config); err != nil {
 			panic(err)
-		}
-		for key, db := range config.DatabasesConfig {
-			fmt.Println(key, db)
 		}
 		return config
 	})
