@@ -19,6 +19,6 @@ func (h *httpDelivery) initRoute() {
 }
 
 func (h *httpDelivery) initDefaulltMiddleware() {
-	h.app.Use(recover.New())
 	h.app.Use(middleware.LogRequest)
+	h.app.Use(recover.New())
 }
