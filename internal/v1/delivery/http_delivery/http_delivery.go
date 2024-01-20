@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/delivery/http_delivery/controller"
-	"github.com/dathuynh1108/clean-arch-base/internal/v1/usecase"
 	"github.com/dathuynh1108/clean-arch-base/pkg/comjson"
 	"github.com/dathuynh1108/clean-arch-base/pkg/config"
 	"github.com/gofiber/fiber/v2"
@@ -13,28 +12,23 @@ import (
 type httpDelivery struct {
 	app              *fiber.App
 	healthController *controller.HealthControler
+	wsController     *controller.WSController
 }
 
 func ServeHTTP(host, port string) error {
 	config := config.GetConfig()
 
-	// Inject healthUC
-	healthUC := usecase.ProvideHealthUsecase()
-
-	// Controller
-	errorController := controller.NewErrorController()
-	healthController := controller.NewHealthController(healthUC)
-
 	httpDelivery := httpDelivery{
 		app: fiber.New(
 			fiber.Config{
-				ErrorHandler: errorController.ErrorHandler,
+				ErrorHandler: controller.ProvideErrorController().ErrorHandler,
 				JSONEncoder:  comjson.Marshal,
 				JSONDecoder:  comjson.Unmarshal,
 				Network:      fiber.NetworkTCP,
 			},
 		),
-		healthController: healthController,
+		healthController: controller.ProvideHealthController(),
+		wsController:     controller.ProvideWSController(),
 	}
 
 	httpDelivery.initDefaulltMiddleware()

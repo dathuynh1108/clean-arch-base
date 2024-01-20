@@ -10,7 +10,7 @@ import (
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/repository"
 )
 
-// Injectors from wire.go:
+// Injectors from usecase.go:
 
 func ProvideHealthUsecase() HealthUsecase {
 	repoRouter := repository.ProvideHealthRepo()

@@ -3,7 +3,9 @@ package httpdelivery
 import (
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/delivery/http_delivery/controller"
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/delivery/http_delivery/middleware"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/websocket/v2"
 )
 
 func (h *httpDelivery) initRoute() {
@@ -21,4 +23,20 @@ func (h *httpDelivery) initRoute() {
 func (h *httpDelivery) initDefaulltMiddleware() {
 	h.app.Use(middleware.LogRequest)
 	h.app.Use(recover.New())
+}
+
+func (h *httpDelivery) initWebSocket() {
+	h.app.Use("/ws", func(c *fiber.Ctx) error {
+		// IsWebSocketUpgrade returns true if the client
+		// requested upgrade to the WebSocket protocol.
+		if websocket.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			return c.Next()
+		}
+		return fiber.ErrUpgradeRequired
+	})
+	h.app.Get("/ws/:id", websocket.New(func(c *websocket.Conn) {
+		// Websocket logic
+		h.wsController.Handle(c)
+	}))
 }
