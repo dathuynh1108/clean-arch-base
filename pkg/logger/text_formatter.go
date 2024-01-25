@@ -214,6 +214,10 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 		}
 		f.appendKeyValue(b, "name", f.Name, true)
 
+		if formatCaller(entry) != "" {
+			f.appendKeyValue(b, "caller", formatCaller(entry), true)
+		}
+
 		if entry.Message != "" {
 			f.appendKeyValue(b, "msg", entry.Message, lastKeyIdx >= 0)
 		}
@@ -268,13 +272,17 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *logrus.Entry, keys 
 		}
 	}
 
-	messageFormat := "%s"
+	messageFormat := "%s\n"
 	if f.SpacePadding != 0 {
 		messageFormat = fmt.Sprintf("%%-%ds", f.SpacePadding)
 	}
 
+	if prefix != "" {
+		messageFormat = fmt.Sprintf("%s - %s", prefix, messageFormat)
+	}
+
 	if f.DisableTimestamp {
-		fmt.Fprintf(b, "%s%s "+messageFormat, level, prefix, message)
+		fmt.Fprintf(b, "[%s][%s] %s\n"+messageFormat, level, formatCaller(entry), message)
 	} else {
 		var timestamp string
 		if !f.FullTimestamp {
@@ -282,7 +290,7 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *logrus.Entry, keys 
 		} else {
 			timestamp = entry.Time.Format(timestampFormat)
 		}
-		fmt.Fprintf(b, "%s%s%s -%s "+messageFormat, "["+level+"]", "["+colorScheme.TimestampColor(timestamp)+"]", "["+f.Name+"]", prefix, message)
+		fmt.Fprintf(b, "[%s][%s][%s] %s\n"+messageFormat, level, colorScheme.TimestampColor(timestamp), f.Name, formatCaller(entry), message)
 	}
 	for _, k := range keys {
 		if k != "prefix" {
@@ -368,4 +376,12 @@ func prefixFieldClashes(data logrus.Fields) {
 	if l, ok := data["level"]; ok {
 		data["fields.level"] = l
 	}
+}
+
+func formatCaller(entry *logrus.Entry) string {
+	var callerText = ""
+	if entry.Caller != nil {
+		callerText = fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
+	}
+	return callerText
 }

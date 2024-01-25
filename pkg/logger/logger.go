@@ -29,6 +29,8 @@ func InitLogger() error {
 
 	defaultLogger.SetLevel(getLevel(config.LoggerConfig.Level))
 
+	defaultLogger.SetReportCaller(true)
+
 	defaultLogger.Info("Init logger successfully!")
 	return nil
 }
