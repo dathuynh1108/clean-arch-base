@@ -9,14 +9,10 @@ import (
 )
 
 func (h *httpDelivery) initRoute() {
-	groupMapping := map[string]controller.Controller{
-		"/health": controller.ProvideHealthController(),
-	}
-
 	v1 := h.app.Group("/api/v1")
-	for groupPath := range groupMapping {
+	for groupPath := range h.groupMapping {
 		controllerGroup := v1.Group(groupPath)
-		groupMapping[groupPath].InitControllerGroup(controllerGroup)
+		h.groupMapping[groupPath].InitControllerGroup(controllerGroup)
 	}
 }
 

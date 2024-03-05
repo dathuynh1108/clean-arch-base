@@ -10,7 +10,8 @@ import (
 )
 
 type httpDelivery struct {
-	app *fiber.App
+	app          *fiber.App
+	groupMapping map[string]controller.Controller
 }
 
 func ServeHTTP(host, port string) error {
@@ -25,6 +26,10 @@ func ServeHTTP(host, port string) error {
 				Network:      fiber.NetworkTCP,
 			},
 		),
+		groupMapping: map[string]controller.Controller{
+			// Place other group here
+			"/health": controller.ProvideHealthController(),
+		},
 	}
 
 	httpDelivery.initDefaulltMiddleware()
