@@ -10,7 +10,7 @@ import (
 
 func (h *httpDelivery) initRoute() {
 	groupMapping := map[string]controller.Controller{
-		"/health": h.healthController,
+		"/health": controller.ProvideHealthController(),
 	}
 
 	v1 := h.app.Group("/api/v1")
@@ -26,6 +26,7 @@ func (h *httpDelivery) initDefaulltMiddleware() {
 }
 
 func (h *httpDelivery) initWebSocket() {
+	wsController := controller.ProvideWSController()
 	h.app.Use("/ws", func(c *fiber.Ctx) error {
 		// IsWebSocketUpgrade returns true if the client
 		// requested upgrade to the WebSocket protocol.
@@ -35,8 +36,9 @@ func (h *httpDelivery) initWebSocket() {
 		}
 		return fiber.ErrUpgradeRequired
 	})
+
 	h.app.Get("/ws/:id", websocket.New(func(c *websocket.Conn) {
 		// Websocket logic
-		h.wsController.Handle(c)
+		wsController.Handle(c)
 	}))
 }

@@ -10,9 +10,7 @@ import (
 )
 
 type httpDelivery struct {
-	app              *fiber.App
-	healthController *controller.HealthControler
-	wsController     *controller.WSController
+	app *fiber.App
 }
 
 func ServeHTTP(host, port string) error {
@@ -27,12 +25,11 @@ func ServeHTTP(host, port string) error {
 				Network:      fiber.NetworkTCP,
 			},
 		),
-		healthController: controller.ProvideHealthController(),
-		wsController:     controller.ProvideWSController(),
 	}
 
 	httpDelivery.initDefaulltMiddleware()
 	httpDelivery.initRoute()
+	httpDelivery.initWebSocket()
 
 	return httpDelivery.app.Listen(fmt.Sprintf("%v:%v", config.ServerConfig.Host, config.ServerConfig.Port))
 }
