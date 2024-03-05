@@ -11,7 +11,7 @@ var serviceCMD = &cobra.Command{
 
 func init() {
 	rootCMD.AddCommand(serviceCMD)
-	rootCMD.PersistentFlags().String("config-path", "./configs/config.toml", "Config file path")
+	rootCMD.PersistentFlags().StringP("config", "c", "./configs/config.toml", "Config file path")
 
 	serviceCMD.AddCommand(httpCMD)
 }

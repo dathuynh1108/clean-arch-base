@@ -26,4 +26,4 @@ RUN  apk add --no-cache bash \
 COPY --from=builder /service/app/main .
 
 ENTRYPOINT ["/service/app/main"]
-CMD ["--config-path", "/service/app/configs/config.yaml"]
+CMD ["--config", "/service/app/configs/config.yaml"]
