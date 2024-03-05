@@ -15,7 +15,7 @@ var rootCMD = &cobra.Command{
 	Short: "Root CMD",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Root cmd, init base for service ...")
-		configPath, err := cmd.Flags().GetString("config-path")
+		configPath, err := cmd.Flags().GetString("config")
 		if err != nil {
 			panic(err)
 		}
