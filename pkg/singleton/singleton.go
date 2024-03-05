@@ -6,32 +6,21 @@ import (
 )
 
 type Singleton[T any] struct {
-	mux      sync.RWMutex
-	isLoaded bool
 	instance T
 	loader   func() T
+	once     sync.Once
 }
 
 func NewSingleton[T any](loader func() T) *Singleton[T] {
 	return &Singleton[T]{
-		isLoaded: false,
-		loader:   loader,
+		loader: loader,
 	}
 }
 
 func (s *Singleton[T]) Get() T {
-	if s.isLoaded {
-		return s.instance
-	}
-
-	s.mux.Lock()
-	defer s.mux.Unlock()
-
-	// Check again because another process can init this
-	if !s.isLoaded {
+	s.once.Do(func() {
 		s.instance = s.loader()
-		s.isLoaded = true
-	}
+	})
 
 	return s.instance
 }
