@@ -6,6 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/websocket/v2"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
 
 func (h *httpDelivery) initRoute() {
@@ -37,4 +39,11 @@ func (h *httpDelivery) initWebSocket() {
 		// Websocket logic
 		wsController.Handle(c)
 	}))
+}
+
+func (h *httpDelivery) initMetrics() {
+	h.app.Get("/metrics", func(ctx *fiber.Ctx) error {
+		fasthttpadaptor.NewFastHTTPHandler(promhttp.Handler())(ctx.Context())
+		return nil
+	})
 }

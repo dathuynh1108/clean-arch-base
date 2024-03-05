@@ -35,6 +35,7 @@ func ServeHTTP(host, port string) error {
 	httpDelivery.initDefaulltMiddleware()
 	httpDelivery.initRoute()
 	httpDelivery.initWebSocket()
+	httpDelivery.initMetrics()
 
 	return httpDelivery.app.Listen(fmt.Sprintf("%v:%v", config.ServerConfig.Host, config.ServerConfig.Port))
 }
