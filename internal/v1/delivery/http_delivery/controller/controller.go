@@ -15,7 +15,7 @@ type Controller interface {
 	BindAndValidate(ctx *fiber.Ctx, data any) error
 	OK(ctx *fiber.Ctx, code int, message any, data any) error
 	OKEmpty(ctx *fiber.Ctx) error
-	Failure(ctx *fiber.Ctx, httpCode int, code int, message any, error error) error
+	Failure(ctx *fiber.Ctx, err error) error
 	InitControllerGroup(app fiber.Router)
 }
 
@@ -50,14 +50,15 @@ func (c *controller) OKEmpty(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(nil)
 }
 
-func (c *controller) Failure(ctx *fiber.Ctx, httpCode int, code int, message any, err error) error {
+func (c *controller) Failure(ctx *fiber.Ctx, err error) error {
+	httpCode, code, message, errors := errorToResponse(err)
 	return ctx.
 		Status(httpCode).
 		JSON(&entity.Response{
 			Code:    code,
 			Message: message,
 			Data:    nil,
-			Errors:  errorToResponse(err),
+			Errors:  errors,
 		})
 }
 
@@ -65,18 +66,25 @@ func (c *controller) InitControllerGroup(app fiber.Router) {
 	panic("InitControllerGroup is not implemented")
 }
 
-func errorToResponse(rootErr error) []string {
+func errorToResponse(rootErr error) (httpCode int, code int, message any, errMessages []string) {
 	switch errT := rootErr.(type) {
 	case govalidator.ValidationErrors:
-		errMessages := make([]string, len(errT))
+		httpCode = http.StatusBadRequest
+		code = http.StatusBadRequest
+		message = "Validation Error"
+		errMessages = make([]string, len(errT))
 		for i, fieldError := range errT {
 			errMessages[i] = fmt.Sprintf(
 				"Field validation for '%s' failed on the '%s' tag with value '%v'.",
 				fieldError.Field(), fieldError.Tag(), fieldError.Value(),
 			)
 		}
-		return errMessages
+		return
 	default:
-		return []string{rootErr.Error()}
+		httpCode = http.StatusInternalServerError
+		code = http.StatusInternalServerError
+		message = "Internal Server Error"
+		errMessages = []string{rootErr.Error()}
+		return
 	}
 }
