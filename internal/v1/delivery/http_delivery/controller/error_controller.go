@@ -6,14 +6,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type ErrorControler struct {
+type ErrorController struct {
 	controller
 }
 
-func NewErrorController() *ErrorControler {
-	return &ErrorControler{}
+func NewErrorController() *ErrorController {
+	return &ErrorController{}
 }
 
-func (c *ErrorControler) ErrorHandler(ctx *fiber.Ctx, err error) error {
+func (c *ErrorController) ErrorHandler(ctx *fiber.Ctx, err error) error {
 	return c.Failure(ctx, http.StatusInternalServerError, http.StatusInternalServerError, "Internal Server Error", []error{err})
 }

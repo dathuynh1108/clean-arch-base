@@ -13,10 +13,8 @@ type ServerConfig struct {
 }
 
 type RedisConfig struct {
-	Addrs    []string `mapstructure:"addrs"`
-	Username string   `mapstructure:"username"`
-	Password string   `mapstructure:"password"`
-	DB       int      `mapstructure:"db"`
+	DSN       string `mapstructure:"dsn"`
+	IsCluster bool   `mapstructure:"is_cluster"`
 }
 
 type DatabaseConfig struct {
@@ -58,7 +56,7 @@ func InitConfig(path string) error {
 			panic(err)
 		}
 		return config
-	})
+	}, true)
 	return nil
 }
 

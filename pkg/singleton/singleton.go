@@ -11,10 +11,14 @@ type Singleton[T any] struct {
 	once     sync.Once
 }
 
-func NewSingleton[T any](loader func() T) *Singleton[T] {
-	return &Singleton[T]{
+func NewSingleton[T any](loader func() T, preload bool) *Singleton[T] {
+	s := &Singleton[T]{
 		loader: loader,
 	}
+	if preload {
+		_ = s.Get()
+	}
+	return s
 }
 
 func (s *Singleton[T]) Get() T {

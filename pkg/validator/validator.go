@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	validatorSingleton = singleton.NewSingleton(func() *Validator { return NewValidator() })
+	validatorSingleton = singleton.NewSingleton(func() *Validator { return NewValidator() }, true)
 )
 
 type ValidateError struct {

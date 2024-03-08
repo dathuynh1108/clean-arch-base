@@ -7,24 +7,24 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type HealthControler struct {
+type HealthController struct {
 	controller
 	uc usecase.HealthUsecase
 }
 
 func NewHealthController(
 	uc usecase.HealthUsecase,
-) *HealthControler {
-	return &HealthControler{
+) *HealthController {
+	return &HealthController{
 		uc: uc,
 	}
 }
 
-func (h *HealthControler) InitControllerGroup(app fiber.Router) {
+func (h *HealthController) InitControllerGroup(app fiber.Router) {
 	app.Get("/health/*", h.GetHealth)
 }
 
-func (h *HealthControler) GetHealth(c *fiber.Ctx) (err error) {
+func (h *HealthController) GetHealth(c *fiber.Ctx) (err error) {
 	if err = h.BindAndValidate(c, nil); err != nil {
 		return err
 	}

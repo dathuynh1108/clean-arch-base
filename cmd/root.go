@@ -7,7 +7,7 @@ import (
 	"github.com/dathuynh1108/clean-arch-base/pkg/config"
 	"github.com/dathuynh1108/clean-arch-base/pkg/database"
 	"github.com/dathuynh1108/clean-arch-base/pkg/logger"
-	redisclient "github.com/dathuynh1108/clean-arch-base/pkg/redis_client"
+	"github.com/dathuynh1108/clean-arch-base/pkg/redisclient"
 	"github.com/spf13/cobra"
 )
 

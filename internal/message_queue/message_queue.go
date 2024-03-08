@@ -2,7 +2,7 @@ package messagqqueue
 
 import (
 	"github.com/adjust/rmq/v5"
-	redisclient "github.com/dathuynh1108/clean-arch-base/pkg/redis_client"
+	"github.com/dathuynh1108/clean-arch-base/pkg/redisclient"
 	"github.com/dathuynh1108/clean-arch-base/pkg/singleton"
 )
 
@@ -23,7 +23,7 @@ func InitMessageQueue() error {
 			panic(err)
 		}
 		return msgQueue
-	})
+	}, true)
 	return nil
 }
 
