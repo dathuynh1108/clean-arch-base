@@ -15,5 +15,5 @@ func NewErrorController() *ErrorController {
 }
 
 func (c *ErrorController) ErrorHandler(ctx *fiber.Ctx, err error) error {
-	return c.Failure(ctx, http.StatusInternalServerError, http.StatusInternalServerError, "Internal Server Error", []error{err})
+	return c.Failure(ctx, http.StatusInternalServerError, http.StatusInternalServerError, "Internal Server Error", err)
 }
