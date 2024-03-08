@@ -20,12 +20,16 @@ type Controller interface {
 type controller struct{}
 
 func (c *controller) BindAndValidate(ctx *fiber.Ctx, data any) error {
+	if data == nil {
+		return nil
+	}
+
 	if err := ctx.BodyParser(data); err != nil {
 		return comerr.WrapError(err, "Failed to parse request body")
 	}
-	errs := validator.GetValidator().Validate(data)
-	if errs != nil {
-		return c.Failure(ctx, http.StatusBadRequest, http.StatusBadRequest, "Invalid request", errs)
+	err := validator.GetValidator().Validate(data)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -45,13 +49,18 @@ func (c *controller) OKEmpty(ctx *fiber.Ctx) error {
 }
 
 func (c *controller) Failure(ctx *fiber.Ctx, httpCode int, code int, message any, errors []error) error {
+	errorsString := make([]string, len(errors))
+	for i, err := range errors {
+		errorsString[i] = err.Error()
+	}
+
 	return ctx.
 		Status(httpCode).
 		JSON(&entity.Response{
 			Code:    code,
 			Message: message,
 			Data:    nil,
-			Errors:  errors,
+			Errors:  errorsString,
 		})
 }
 

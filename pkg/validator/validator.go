@@ -3,6 +3,7 @@ package validator
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/dathuynh1108/clean-arch-base/pkg/singleton"
 	"github.com/go-playground/validator/v10"
@@ -38,6 +39,7 @@ func GetValidator() *Validator {
 }
 
 func (v *Validator) init() {
+	v.validator.RegisterTagNameFunc(getJsonTagName)
 	v.validator.RegisterCustomTypeFunc(v.extractDecimal, decimal.Decimal{})
 }
 
@@ -50,21 +52,30 @@ func (v Validator) extractDecimal(field reflect.Value) any {
 	return valueFloat
 }
 
-func (v Validator) Validate(data interface{}) []error {
-	validationErrors := []error{}
+func (v Validator) Validate(data interface{}) error {
 	errs := v.validator.Struct(data)
 	if errs != nil {
-		for _, err := range errs.(validator.ValidationErrors) {
-			// In this case data object is actually holding the User struct
-			var elem ValidateError
+		return errs
+		// validationErrors := []error{}
+		// for _, err := range errs.(validator.ValidationErrors) {
+		// 	// In this case data object is actually holding the User struct
+		// 	var elem ValidateError
 
-			elem.FailedField = err.Field() // Export struct field name
-			elem.Tag = err.Tag()           // Export struct tag
-			elem.Value = err.Value()       // Export field value
+		// 	elem.FailedField = err.Field() // Export struct field name
+		// 	elem.Tag = err.Tag()           // Export struct tag
+		// 	elem.Value = err.Value()       // Export field value
 
-			validationErrors = append(validationErrors, elem)
-		}
+		// 	validationErrors = append(validationErrors, elem)
+		// }
 	}
 
-	return validationErrors
+	return nil
+}
+
+func getJsonTagName(fld reflect.StructField) string {
+	name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+	if name == "-" {
+		return ""
+	}
+	return name
 }
