@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -13,16 +12,6 @@ import (
 var (
 	validatorSingleton = singleton.NewSingleton(func() *Validator { return NewValidator() }, true)
 )
-
-type ValidateError struct {
-	FailedField string
-	Tag         string
-	Value       interface{}
-}
-
-func (e ValidateError) Error() string {
-	return fmt.Sprintf("Field %s failed on tag %s with value %v", e.FailedField, e.Tag, e.Value)
-}
 
 type Validator struct {
 	validator *validator.Validate
