@@ -94,5 +94,5 @@ func SetBatch[T any](
 }
 
 func decorator(key string) string {
-	return fmt.Sprintf("%s:%s", "", key)
+	return fmt.Sprintf("%s:%s", "CACHE KEY PREFIX", key)
 }
