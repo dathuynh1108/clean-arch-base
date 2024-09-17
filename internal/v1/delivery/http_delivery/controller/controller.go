@@ -6,68 +6,85 @@ import (
 
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/entity"
 	"github.com/dathuynh1108/clean-arch-base/pkg/comerr"
-	"github.com/dathuynh1108/clean-arch-base/pkg/validator"
+
 	govalidator "github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 )
 
 type Controller interface {
-	BindAndValidate(ctx *fiber.Ctx, data any) error
-	OK(ctx *fiber.Ctx, code int, message any, data any) error
-	OKEmpty(ctx *fiber.Ctx) error
-	Failure(ctx *fiber.Ctx, err error) error
-	InitControllerGroup(app fiber.Router)
+	BindAndValidate(ctx echo.Context, data any) error
+	OK(ctx echo.Context, code int, message any, data any) error
+	OKEmpty(ctx echo.Context) error
+	Failure(ctx echo.Context, err error) error
+	InitControllerGroup(app *echo.Group)
 }
 
 type controller struct{}
 
-func (c *controller) BindAndValidate(ctx *fiber.Ctx, data any) error {
+func (c *controller) BindAndValidate(ctx echo.Context, data any) error {
 	if data == nil {
 		return nil
 	}
-
-	if err := ctx.BodyParser(data); err != nil {
-		return comerr.WrapError(err, "Failed to parse request body")
-	}
-	err := validator.GetValidator().Validate(data)
-	if err != nil {
+	if err := ctx.Bind(data); err != nil {
 		return err
 	}
+
+	if err := ctx.Validate(data); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (c *controller) OK(ctx *fiber.Ctx, code int, message any, data any) error {
+func (c *controller) OK(ctx echo.Context, code int, message any, data any) error {
 	return ctx.
-		Status(http.StatusOK).
-		JSON(&entity.Response{
-			Code:    code,
-			Message: message,
-			Data:    data,
-		})
+		JSON(
+			http.StatusOK,
+			&entity.Response{
+				Code:    code,
+				Message: message,
+				Data:    data,
+			},
+		)
 }
 
-func (c *controller) OKEmpty(ctx *fiber.Ctx) error {
-	return ctx.Status(http.StatusOK).JSON(nil)
+func (c *controller) OKEmpty(ctx echo.Context) error {
+	return ctx.
+		JSON(
+			http.StatusOK,
+			&entity.Response{
+				Code:    http.StatusOK,
+				Message: "Success",
+				Data:    nil,
+			},
+		)
 }
 
-func (c *controller) Failure(ctx *fiber.Ctx, err error) error {
+func (c *controller) Failure(ctx echo.Context, err error) error {
 	httpCode, code, message, errors := errorToResponse(err)
 	return ctx.
-		Status(httpCode).
-		JSON(&entity.Response{
-			Code:    code,
-			Message: message,
-			Data:    nil,
-			Errors:  errors,
-		})
+		JSON(
+			httpCode,
+			&entity.Response{
+				Code:    code,
+				Message: message,
+				Data:    nil,
+				Errors:  errors,
+			},
+		)
 }
 
-func (c *controller) InitControllerGroup(app fiber.Router) {
-	panic("InitControllerGroup is not implemented")
-}
+func errorToResponse(err error) (httpCode int, code int, message any, errMessages []string) {
+	switch errT := comerr.UnwrapFirst(err).(type) {
+	case *echo.HTTPError:
+		httpCode = errT.Code
+		code = errT.Code
+		message = errT.Message
+		if errT.Internal != nil {
+			errMessages = []string{errT.Internal.Error()}
+		}
+		return
 
-func errorToResponse(rootErr error) (httpCode int, code int, message any, errMessages []string) {
-	switch errT := rootErr.(type) {
 	case govalidator.ValidationErrors:
 		httpCode = http.StatusBadRequest
 		code = http.StatusBadRequest
@@ -75,16 +92,16 @@ func errorToResponse(rootErr error) (httpCode int, code int, message any, errMes
 		errMessages = make([]string, len(errT))
 		for i, fieldError := range errT {
 			errMessages[i] = fmt.Sprintf(
-				"Field validation for '%s' failed on the '%s' tag with value '%v'.",
+				"Field validation for '%s' failed on the '%s' tag with value '%v'",
 				fieldError.Field(), fieldError.Tag(), fieldError.Value(),
 			)
 		}
 		return
 	default:
-		httpCode = http.StatusInternalServerError
-		code = http.StatusInternalServerError
-		message = "Internal Server Error"
-		errMessages = []string{rootErr.Error()}
+		httpCode = http.StatusBadRequest
+		code = http.StatusBadRequest
+		message = "Bad Request"
+		errMessages = []string{err.Error()}
 		return
 	}
 }

@@ -4,6 +4,7 @@ package usecase
 
 import (
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/repository"
+
 	"github.com/google/wire"
 )
 

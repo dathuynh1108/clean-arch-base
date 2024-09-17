@@ -1,41 +1,44 @@
 package httpdelivery
 
 import (
-	"fmt"
+	"context"
 
+	"github.com/dathuynh1108/clean-arch-base/internal/common"
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/delivery/http_delivery/controller"
-	"github.com/dathuynh1108/clean-arch-base/pkg/comjson"
 	"github.com/dathuynh1108/clean-arch-base/pkg/config"
-	"github.com/gofiber/fiber/v2"
+
+	"github.com/labstack/echo/v4"
 )
 
-type httpDelivery struct {
-	app          *fiber.App
+type HTTPDeliveryV1 struct {
+	echo         *echo.Echo
 	groupMapping map[string]controller.Controller
 }
 
-func ServeHTTP(host, port string) error {
-	config := config.GetConfig()
-
-	httpDelivery := httpDelivery{
-		app: fiber.New(
-			fiber.Config{
-				ErrorHandler: controller.ProvideErrorController().ErrorHandler,
-				JSONEncoder:  comjson.Marshal,
-				JSONDecoder:  comjson.Unmarshal,
-				Network:      fiber.NetworkTCP,
-			},
-		),
+func NewHTTPDeliveryV1() *HTTPDeliveryV1 {
+	httpDelivery := HTTPDeliveryV1{
+		echo: NewEchoDefault(),
 		groupMapping: map[string]controller.Controller{
 			// Place other group here
 			"/health": controller.ProvideHealthController(),
 		},
 	}
 
-	httpDelivery.initDefaulltMiddleware()
-	httpDelivery.initRoute()
-	httpDelivery.initWebSocket()
-	httpDelivery.initMetrics()
+	return &httpDelivery
+}
+func (h *HTTPDeliveryV1) ServeHTTP(ctx context.Context, host string, port int) (stopper common.StartStopper, err error) {
+	config := config.GetConfig()
 
-	return httpDelivery.app.Listen(fmt.Sprintf("%v:%v", config.ServerConfig.Host, config.ServerConfig.Port))
+	h.initDefaulltMiddleware()
+	h.initRoute()
+
+	echoSS := NewEchoStartStopper(h.echo, config.ServerConfig.Host, config.ServerConfig.Port)
+	go func() {
+		err = echoSS.Start(ctx)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	return echoSS, nil
 }

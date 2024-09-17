@@ -1,11 +1,16 @@
 package comjson
 
-import "github.com/bytedance/sonic"
+import (
+	"io"
 
-func Marshal(val interface{}) ([]byte, error) {
-	return sonic.Marshal(val)
-}
+	json "github.com/bytedance/sonic"
+)
 
-func Unmarshal(buf []byte, val interface{}) error {
-	return sonic.Unmarshal(buf, val)
-}
+var (
+	Marshal         func(val interface{}) ([]byte, error)   = json.Marshal
+	Unmarshal       func(buf []byte, val interface{}) error = json.Unmarshal
+	UnmarshalString func(buf string, val interface{}) error = json.UnmarshalString
+	MarshalString   func(val interface{}) (string, error)   = json.MarshalString
+	NewEncoder      func(writer io.Writer) json.Encoder     = json.ConfigDefault.NewEncoder
+	NewDecoder      func(reader io.Reader) json.Decoder     = json.ConfigDefault.NewDecoder
+)

@@ -31,7 +31,7 @@ func (r *dbPool) GetMaster(alias DBAlias) *DB {
 }
 
 func (r *dbPool) GetReplica(alias DBAlias) *DB {
-	return r.GetDB(BuildAlias(alias, AliasMaster))
+	return r.GetDB(BuildAlias(alias, AliasReplica))
 }
 
 func (r *dbPool) GetDB(alias string) *DB {

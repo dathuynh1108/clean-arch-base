@@ -11,6 +11,14 @@ type Singleton[T any] struct {
 	once     sync.Once
 }
 
+func NewSingletonInstance[T any](instance T) *Singleton[T] {
+	s := &Singleton[T]{
+		instance: instance,
+		loader:   func() T { return instance },
+	}
+	return s
+}
+
 func NewSingleton[T any](loader func() T, preload bool) *Singleton[T] {
 	s := &Singleton[T]{
 		loader: loader,
@@ -55,4 +63,10 @@ func (s *SingletonMap[T]) Get(key fmt.Stringer) T {
 		s.instanceMap[textKey] = value
 	}
 	return value
+}
+
+func (s *SingletonMap[T]) Set(key fmt.Stringer, value T) {
+	s.mux.Lock()
+	defer s.mux.Unlock()
+	s.instanceMap[key.String()] = value
 }

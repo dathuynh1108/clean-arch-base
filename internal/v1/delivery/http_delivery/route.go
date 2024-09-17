@@ -1,49 +1,55 @@
 package httpdelivery
 
 import (
-	"github.com/dathuynh1108/clean-arch-base/internal/v1/delivery/http_delivery/controller"
+	"net/http"
+	"time"
+
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/delivery/http_delivery/middleware"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/websocket/v2"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/valyala/fasthttp/fasthttpadaptor"
+
+	"github.com/labstack/echo/v4"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
+	"go.elastic.co/apm/module/apmechov4/v2"
 )
 
-func (h *httpDelivery) initRoute() {
-	v1 := h.app.Group("/api/v1")
+func (h *HTTPDeliveryV1) initRoute() {
+	v1 := h.echo.Group("/api/v1")
 	for groupPath := range h.groupMapping {
 		controllerGroup := v1.Group(groupPath)
 		h.groupMapping[groupPath].InitControllerGroup(controllerGroup)
 	}
 }
 
-func (h *httpDelivery) initDefaulltMiddleware() {
-	h.app.Use(middleware.LogRequest)
-	h.app.Use(recover.New())
-}
-
-func (h *httpDelivery) initWebSocket() {
-	wsController := controller.ProvideWSController()
-	h.app.Use("/ws", func(c *fiber.Ctx) error {
-		// IsWebSocketUpgrade returns true if the client
-		// requested upgrade to the WebSocket protocol.
-		if websocket.IsWebSocketUpgrade(c) {
-			c.Locals("allowed", true)
-			return c.Next()
-		}
-		return fiber.ErrUpgradeRequired
-	})
-
-	h.app.Get("/ws/:id", websocket.New(func(c *websocket.Conn) {
-		// Websocket logic
-		wsController.Handle(c)
+func (h *HTTPDeliveryV1) initDefaulltMiddleware() {
+	h.echo.Use(echoMiddleware.RecoverWithConfig(echoMiddleware.RecoverConfig{
+		StackSize: 1 << 10, // 1 KB
+		LogLevel:  log.ERROR,
 	}))
-}
 
-func (h *httpDelivery) initMetrics() {
-	h.app.Get("/metrics", func(ctx *fiber.Ctx) error {
-		fasthttpadaptor.NewFastHTTPHandler(promhttp.Handler())(ctx.Context())
-		return nil
-	})
+	h.echo.OPTIONS("/*", func(c echo.Context) error { return nil })
+
+	h.echo.Use(echoMiddleware.CORSWithConfig(echoMiddleware.CORSConfig{
+		AllowCredentials: true,
+		AllowMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodOptions,
+		},
+		MaxAge: int((4 * time.Hour).Seconds()),
+
+		UnsafeWildcardOriginWithAllowCredentials: true,
+	}))
+
+	h.echo.Use(apmechov4.Middleware())
+
+	h.echo.Use(middleware.CompressWithConfig(middleware.CompressConfig{
+		Level:       middleware.CompressLevelDefault,
+		HandleError: true,
+	}))
+
+	h.echo.Use(echoMiddleware.CSRF())
+
+	h.echo.Use(echoMiddleware.Decompress())
+
+	h.echo.Use(middleware.LogRequest())
 }

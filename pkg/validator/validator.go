@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/dathuynh1108/clean-arch-base/pkg/singleton"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/shopspring/decimal"
 )

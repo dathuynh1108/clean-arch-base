@@ -14,9 +14,9 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideHealthRepo() repo.RepoRouter[HealthRepository] {
+func ProvideHealthRepo() repo.RepoRouter[HealthRepo] {
 	dbAlias := ProvideDBAliasDefault()
-	dbPool := database.ProvideDBPool()
+	dbPool := database.GetDBPool()
 	repositoryHealthRepoRouter := NewHealthRepoRouter(dbAlias, dbPool)
 	return repositoryHealthRepoRouter
 }

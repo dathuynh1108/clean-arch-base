@@ -1,22 +1,36 @@
 package middleware
 
 import (
+	"time"
+
 	"github.com/dathuynh1108/clean-arch-base/pkg/logger"
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 )
 
-func LogRequest(ctx *fiber.Ctx) error {
-	err := ctx.Next()
-	if err != nil {
-		logger.GetLogger().
-			WithFields(map[string]any{
-				"method": ctx.Method(),
-				"path":   ctx.Path(),
-				"ip":     ctx.IP(),
-				"host":   ctx.Hostname(),
-			}).
-			WithError(err).
-			Error("Request error")
+func LogRequest() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(ctx echo.Context) (err error) {
+			var (
+				startTime = time.Now()
+				request   = ctx.Request()
+			)
+
+			defer func() {
+				logger.GetLogger().
+					WithFields(map[string]any{
+						"method": request.Method,
+						"path":   ctx.Path(),
+						"ip":     ctx.RealIP(),
+						"host":   ctx.Request().Host,
+						"time":   time.Since(startTime).Milliseconds(),
+					}).
+					WithError(err).
+					Info("Request")
+			}()
+
+			err = next(ctx)
+			return err
+
+		}
 	}
-	return err
 }

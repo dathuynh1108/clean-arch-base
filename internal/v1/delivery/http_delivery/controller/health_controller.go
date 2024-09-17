@@ -3,8 +3,10 @@ package controller
 import (
 	"net/http"
 
+	"github.com/dathuynh1108/clean-arch-base/internal/common"
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/usecase"
-	"github.com/gofiber/fiber/v2"
+
+	"github.com/labstack/echo/v4"
 )
 
 type HealthController struct {
@@ -20,18 +22,20 @@ func NewHealthController(
 	}
 }
 
-func (h *HealthController) InitControllerGroup(app fiber.Router) {
-	app.Get("/health/*", h.GetHealth)
+func (h *HealthController) InitControllerGroup(app *echo.Group) {
+	app.GET("*", h.GetHealth)
 }
 
-func (h *HealthController) GetHealth(c *fiber.Ctx) (err error) {
-	if err = h.BindAndValidate(c, nil); err != nil {
-		return err
-	}
+func (h *HealthController) GetHealth(c echo.Context) (err error) {
 	var (
-		ctx = c.Context()
+		ctx      = common.EchoWrapContext(c)
+		reqModel = struct{}{}
 	)
 
+	if err = h.BindAndValidate(ctx, &reqModel); err != nil {
+		return err
+	}
+
 	reply := h.uc.GetHealth(ctx)
-	return h.OK(c, http.StatusOK, "OK", reply)
+	return h.OK(c, http.StatusOK, reply, reqModel)
 }

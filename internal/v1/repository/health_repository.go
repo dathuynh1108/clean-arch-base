@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/dathuynh1108/clean-arch-base/pkg/database/dbpool"
 	"github.com/dathuynh1108/clean-arch-base/pkg/database/repo"
+
 	"github.com/google/wire"
 	"gorm.io/gorm"
 )
@@ -10,24 +11,26 @@ import (
 var (
 	HealthSet = wire.NewSet(
 		NewHealthRepoRouter,
-		wire.Bind(new(repo.RepoRouter[HealthRepository]), new(*healthRepoRouter)),
+		wire.Bind(new(repo.RepoRouter[HealthRepo]), new(*healthRepoRouter)),
 	)
 )
 
-type HealthRepository interface{}
+type HealthRepo interface {
+	GetDemo() (any, error)
+}
 
-type healthRepository struct {
+type healthRepo struct {
 	baseRepository
 }
 
-func NewHealthRepository(db *gorm.DB) *healthRepository {
-	return &healthRepository{
+func NewHealthRepo(db *gorm.DB) *healthRepo {
+	return &healthRepo{
 		baseRepository: baseRepository{db},
 	}
 }
 
 type healthRepoRouter struct {
-	repo.RepoRouter[HealthRepository]
+	repo.RepoRouter[HealthRepo]
 }
 
 func NewHealthRepoRouter(alias dbpool.DBAlias, dbPool dbpool.DBPool) *healthRepoRouter {
@@ -35,9 +38,14 @@ func NewHealthRepoRouter(alias dbpool.DBAlias, dbPool dbpool.DBPool) *healthRepo
 		repo.NewRepoRouter(
 			alias,
 			dbPool,
-			func(db *gorm.DB) HealthRepository {
-				return NewHealthRepository(db)
+			func(db *gorm.DB) HealthRepo {
+				return NewHealthRepo(db)
 			},
 		),
 	}
+}
+
+func (r *healthRepo) GetDemo() (res any, err error) {
+	err = r.DB.Take(&res).Error
+	return
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/dathuynh1108/clean-arch-base/pkg/database/dbpool"
 	"github.com/dathuynh1108/clean-arch-base/pkg/database/transaction"
+
 	"gorm.io/gorm"
 )
 
@@ -42,9 +43,9 @@ func (r *repoRouter[Repo]) FromReplica(ctx context.Context) Repo {
 
 func (r *repoRouter[Repo]) Transaction(ctx context.Context, execute func(ctx context.Context, tx Repo) error) error {
 	// Check current ctx have transaction or not
-	wrapRepo := func(ctx context.Context, db *gorm.DB) error {
-		txRepo := r.repoCreator(db)
+	wrapRepo := func(ctx context.Context, tx *gorm.DB) error {
+		txRepo := r.repoCreator(tx)
 		return execute(ctx, txRepo)
 	}
-	return transaction.Transaction(ctx, r.dbAlias, wrapRepo, nil)
+	return transaction.Transaction(ctx, r.dbAlias, wrapRepo)
 }

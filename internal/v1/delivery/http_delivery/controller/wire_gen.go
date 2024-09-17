@@ -14,16 +14,11 @@ import (
 
 func ProvideHealthController() *HealthController {
 	healthUsecase := usecase.ProvideHealthUsecase()
-	healthControler := NewHealthController(healthUsecase)
-	return healthControler
-}
-
-func ProvideWSController() *WSController {
-	wsController := NewWSController()
-	return wsController
+	healthController := NewHealthController(healthUsecase)
+	return healthController
 }
 
 func ProvideErrorController() *ErrorController {
-	errorControler := NewErrorController()
-	return errorControler
+	errorController := NewErrorController()
+	return errorController
 }

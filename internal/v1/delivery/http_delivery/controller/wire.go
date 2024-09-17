@@ -4,27 +4,21 @@ package controller
 
 import (
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/usecase"
+
 	"github.com/google/wire"
 )
 
-func ProvideHealthController() *HealthControler {
+func ProvideHealthController() *HealthController {
 	wire.Build(
 		usecase.ProvideHealthUsecase,
 		NewHealthController,
 	)
-	return &HealthControler{}
+	return &HealthController{}
 }
 
-func ProvideWSController() *WSController {
-	wire.Build(
-		NewWSController,
-	)
-	return &WSController{}
-}
-
-func ProvideErrorController() *ErrorControler {
+func ProvideErrorController() *ErrorController {
 	wire.Build(
 		NewErrorController,
 	)
-	return &ErrorControler{}
+	return &ErrorController{}
 }

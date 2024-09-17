@@ -5,6 +5,7 @@ import (
 
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/repository"
 	"github.com/dathuynh1108/clean-arch-base/pkg/database/repo"
+
 	"github.com/google/wire"
 )
 
@@ -20,7 +21,7 @@ type HealthUsecase interface {
 }
 
 func NewHealthUsecase(
-	healthRepoRouter repo.RepoRouter[repository.HealthRepository],
+	healthRepoRouter repo.RepoRouter[repository.HealthRepo],
 ) *healthUsecase {
 	return &healthUsecase{
 		healthRepoRouter: healthRepoRouter,
@@ -28,7 +29,7 @@ func NewHealthUsecase(
 }
 
 type healthUsecase struct {
-	healthRepoRouter repo.RepoRouter[repository.HealthRepository]
+	healthRepoRouter repo.RepoRouter[repository.HealthRepo]
 }
 
 func (h *healthUsecase) GetHealth(ctx context.Context) string {

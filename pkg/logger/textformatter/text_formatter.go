@@ -1,4 +1,4 @@
-package logger
+package textformatter
 
 import (
 	"bytes"
@@ -267,7 +267,7 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *logrus.Entry, keys 
 	} else {
 		prefixValue, trimmedMsg := extractPrefix(entry.Message)
 		if len(prefixValue) > 0 {
-			prefix = colorScheme.PrefixColor(" " + prefixValue + ":")
+			prefix = colorScheme.PrefixColor(prefixValue)
 			message = trimmedMsg
 		}
 	}
@@ -278,11 +278,11 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *logrus.Entry, keys 
 	}
 
 	if prefix != "" {
-		messageFormat = fmt.Sprintf("%s - %s", prefix, messageFormat)
+		messageFormat = fmt.Sprintf("[%s] %s", prefix, messageFormat)
 	}
 
 	if f.DisableTimestamp {
-		fmt.Fprintf(b, "[%s][%s] %s\n"+messageFormat, level, formatCaller(entry), message)
+		fmt.Fprintf(b, "\n[%s][%s] %s"+messageFormat, level, formatCaller(entry), message)
 	} else {
 		var timestamp string
 		if !f.FullTimestamp {

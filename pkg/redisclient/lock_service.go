@@ -2,6 +2,7 @@ package redisclient
 
 import (
 	"github.com/dathuynh1108/clean-arch-base/pkg/singleton"
+
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
 )
@@ -11,8 +12,15 @@ var (
 )
 
 func InitLockService() error {
-	lockServiceSingleton = singleton.NewSingleton(func() *redsync.Redsync {
-		return redsync.New(goredis.NewPool(GetRedis()))
-	}, true)
+	lockServiceSingleton = singleton.NewSingleton(
+		func() *redsync.Redsync {
+			return redsync.New(goredis.NewPool(GetRedis()))
+		},
+		false,
+	)
 	return nil
+}
+
+func GetLockService() *redsync.Redsync {
+	return lockServiceSingleton.Get()
 }
