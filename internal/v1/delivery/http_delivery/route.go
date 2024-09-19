@@ -49,7 +49,7 @@ func (h *HTTPDeliveryV1) initDefaulltMiddleware() {
 
 	h.echo.Use(echoMiddleware.CSRF())
 
-	h.echo.Use(echoMiddleware.Decompress())
+	h.echo.Use(middleware.Decompress())
 
 	h.echo.Use(middleware.LogRequest())
 }
