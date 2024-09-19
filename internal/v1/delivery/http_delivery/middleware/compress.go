@@ -16,10 +16,9 @@ import (
 )
 
 const (
-	CompressSchemeGzip    = "gzip"
-	CompressSchemeBrotli  = "br"
-	CompressSchemeZstd    = "zstd"
-	CompressSchemeDeflate = "deflate"
+	CompressSchemeGzip   = "gzip"
+	CompressSchemeBrotli = "br"
+	CompressSchemeZstd   = "zstd"
 
 	CompressLevelDefault = 1
 	CompressLevelFast    = 2
@@ -52,9 +51,11 @@ func CompressWithConfig(conf CompressConfig) echo.MiddlewareFunc {
 		conf.Level = CompressLevelDefault
 	}
 	var (
-		zstdPool   = compressPoolZstd(conf)
-		brotliPool = compressPoolBrotli(conf)
-		gzipPool   = compressPoolGzip(conf)
+		compressorPoolMap = map[string]*sync.Pool{
+			CompressSchemeZstd:   compressPoolZstd(conf),
+			CompressSchemeBrotli: compressPoolBrotli(conf),
+			CompressSchemeGzip:   compressPoolGzip(conf),
+		}
 	)
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -63,25 +64,36 @@ func CompressWithConfig(conf CompressConfig) echo.MiddlewareFunc {
 				return next(c)
 			}
 			var (
-				res          = c.Response()
-				respHeader   = res.Header()
-				acceptHeader = c.Request().Header.Get(echo.HeaderAcceptEncoding)
+				res                = c.Response()
+				respHeader         = res.Header()
+				acceptEncodingsRaw = c.Request().Header.Values(echo.HeaderAcceptEncoding)
+				acceptEncodings    = make([]string, 0)
 			)
-			if acceptHeader == "" {
+
+			if len(acceptEncodingsRaw) == 0 {
 				return next(c)
 			}
 
+			for _, acceptEncodingRaw := range acceptEncodingsRaw {
+				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
+				// It can be a string of gzip, deflate, br, zstd --> need split by comma
+				for _, acceptEncoding := range strings.Split(acceptEncodingRaw, ",") {
+					acceptEncoding = strings.TrimSpace(acceptEncoding)
+					if acceptEncoding != "" {
+						acceptEncodings = append(acceptEncodings, acceptEncoding)
+					}
+				}
+			}
+
 			var selectedPool *sync.Pool
-			if strings.Contains(acceptHeader, CompressSchemeZstd) {
-				respHeader.Set(echo.HeaderContentEncoding, CompressSchemeZstd)
-				selectedPool = &zstdPool
-			} else if strings.Contains(acceptHeader, CompressSchemeBrotli) {
-				respHeader.Set(echo.HeaderContentEncoding, CompressSchemeBrotli)
-				selectedPool = &brotliPool
-			} else if strings.Contains(acceptHeader, CompressSchemeGzip) {
-				respHeader.Set(echo.HeaderContentEncoding, CompressSchemeGzip)
-				selectedPool = &gzipPool
-			} else {
+			for _, acceptEncoding := range acceptEncodings {
+				if pool, ok := compressorPoolMap[acceptEncoding]; ok {
+					respHeader.Set(echo.HeaderContentEncoding, acceptEncoding)
+					selectedPool = pool
+					break
+				}
+			}
+			if selectedPool == nil {
 				return next(c)
 			}
 
@@ -98,8 +110,8 @@ func CompressWithConfig(conf CompressConfig) echo.MiddlewareFunc {
 
 			defer func() {
 				if res.Size == 0 {
-					switch respHeader.Get(echo.HeaderContentEncoding) {
-					case CompressSchemeBrotli, CompressSchemeGzip, CompressSchemeZstd:
+					contentEncoding := respHeader.Get(echo.HeaderContentEncoding)
+					if _, ok := compressorPoolMap[contentEncoding]; ok {
 						respHeader.Del(echo.HeaderContentEncoding)
 					}
 					cw.Reset(io.Discard)
@@ -124,8 +136,8 @@ func CompressWithConfig(conf CompressConfig) echo.MiddlewareFunc {
 	}
 }
 
-func compressPoolZstd(config CompressConfig) sync.Pool {
-	return sync.Pool{
+func compressPoolZstd(config CompressConfig) *sync.Pool {
+	return &sync.Pool{
 		New: func() interface{} {
 			var level zstd.EncoderLevel
 			switch config.Level {
@@ -145,8 +157,8 @@ func compressPoolZstd(config CompressConfig) sync.Pool {
 	}
 }
 
-func compressPoolGzip(config CompressConfig) sync.Pool {
-	return sync.Pool{
+func compressPoolGzip(config CompressConfig) *sync.Pool {
+	return &sync.Pool{
 		New: func() interface{} {
 			var gzipLevel int
 			switch config.Level {
@@ -166,8 +178,8 @@ func compressPoolGzip(config CompressConfig) sync.Pool {
 	}
 }
 
-func compressPoolBrotli(config CompressConfig) sync.Pool {
-	return sync.Pool{
+func compressPoolBrotli(config CompressConfig) *sync.Pool {
+	return &sync.Pool{
 		New: func() interface{} {
 			var brotliLevel int
 			switch config.Level {
