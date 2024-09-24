@@ -5,8 +5,16 @@ import (
 
 	"github.com/dathuynh1108/clean-arch-base/internal/common"
 	"github.com/dathuynh1108/clean-arch-base/internal/v1/usecase"
+	"github.com/google/wire"
 
 	"github.com/labstack/echo/v4"
+)
+
+var (
+	HealthSet = wire.NewSet(
+		NewHealthController,
+		wire.Bind(new(Controller), new(*HealthController)),
+	)
 )
 
 type HealthController struct {

@@ -8,17 +8,17 @@ import (
 	"github.com/google/wire"
 )
 
-func ProvideHealthController() *HealthController {
-	wire.Build(
-		usecase.ProvideHealthUsecase,
-		NewHealthController,
-	)
-	return &HealthController{}
-}
-
 func ProvideErrorController() *ErrorController {
 	wire.Build(
 		NewErrorController,
 	)
 	return &ErrorController{}
+}
+
+func ProvideHealthController() Controller {
+	wire.Build(
+		usecase.ProvideHealthUsecase,
+		HealthSet,
+	)
+	return &HealthController{}
 }

@@ -12,13 +12,13 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideHealthController() *HealthController {
-	healthUsecase := usecase.ProvideHealthUsecase()
-	healthController := NewHealthController(healthUsecase)
-	return healthController
-}
-
 func ProvideErrorController() *ErrorController {
 	errorController := NewErrorController()
 	return errorController
+}
+
+func ProvideHealthController() Controller {
+	healthUsecase := usecase.ProvideHealthUsecase()
+	healthController := NewHealthController(healthUsecase)
+	return healthController
 }
