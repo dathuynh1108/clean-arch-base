@@ -410,3 +410,10 @@ func OrderAscPositiveFirst(colName string) ExOrderBy {
 		IsExpressionDesc: false,
 	}
 }
+
+func FulltextSearch(keyword string, cols ...clause.Column) clause.Expression {
+	return &fulltextSearchClause{
+		Columns: cols,
+		Text:    keyword,
+	}
+}
