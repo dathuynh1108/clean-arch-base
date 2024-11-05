@@ -17,6 +17,7 @@ require (
 	github.com/labstack/gommon v0.4.2
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d
 	github.com/minio/minio-go/v7 v7.0.76
+	github.com/nicksnyder/go-i18n/v2 v2.4.1
 	github.com/panjf2000/ants/v2 v2.10.0
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/shopspring/decimal v1.4.0
@@ -29,7 +30,7 @@ require (
 	go.elastic.co/apm/v2 v2.6.2
 	golang.org/x/sys v0.25.0
 	golang.org/x/term v0.24.0
-	golang.org/x/text v0.18.0
+	golang.org/x/text v0.19.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/gorm v1.25.12
 )

@@ -57,13 +57,18 @@ type APMConfig struct {
 	Environment string `mapstructure:"environment"`
 }
 
+type TranslationConfig struct {
+	Folder string `mapstructure:"folder"`
+}
+
 type Config struct {
-	ServerConfig    ServerConfig                `mapstructure:"server"`
-	RedisConfig     RedisConfig                 `mapstructure:"redis"`
-	DatabasesConfig map[string][]DatabaseConfig `mapstructure:"databases"`
-	LoggerConfig    LoggerConfig                `mapstructure:"logger"`
-	MinioConfig     MinioConfig                 `mapstructure:"minio"`
-	APMConfig       APMConfig                   `mapstructure:"apm"`
+	ServerConfig      ServerConfig                `mapstructure:"server"`
+	RedisConfig       RedisConfig                 `mapstructure:"redis"`
+	DatabasesConfig   map[string][]DatabaseConfig `mapstructure:"databases"`
+	LoggerConfig      LoggerConfig                `mapstructure:"logger"`
+	MinioConfig       MinioConfig                 `mapstructure:"minio"`
+	APMConfig         APMConfig                   `mapstructure:"apm"`
+	TranslationConfig TranslationConfig           `mapstructure:"translation"`
 }
 
 var (
