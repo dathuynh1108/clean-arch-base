@@ -14,9 +14,8 @@ import (
 
 func (h *HTTPDeliveryV1) initRoute() {
 	v1 := h.echo.Group("/api/v1")
-	for groupPath := range h.groupMapping {
-		controllerGroup := v1.Group(groupPath)
-		h.groupMapping[groupPath].InitControllerGroup(controllerGroup)
+	for i := range h.controllers {
+		h.controllers[i].InitControllerGroup(v1)
 	}
 }
 

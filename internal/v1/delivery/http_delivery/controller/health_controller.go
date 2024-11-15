@@ -31,7 +31,8 @@ func NewHealthController(
 }
 
 func (h *HealthController) InitControllerGroup(app *echo.Group) {
-	app.GET("*", h.GetHealth)
+	group := app.Group("/health")
+	group.GET("*", h.GetHealth)
 }
 
 func (h *HealthController) GetHealth(c echo.Context) (err error) {

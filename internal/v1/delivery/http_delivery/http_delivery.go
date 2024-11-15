@@ -11,16 +11,16 @@ import (
 )
 
 type HTTPDeliveryV1 struct {
-	echo         *echo.Echo
-	groupMapping map[string]controller.Controller
+	echo        *echo.Echo
+	controllers []controller.Controller
 }
 
 func NewHTTPDeliveryV1() *HTTPDeliveryV1 {
 	httpDelivery := HTTPDeliveryV1{
 		echo: NewEchoDefault(),
-		groupMapping: map[string]controller.Controller{
+		controllers: []controller.Controller{
 			// Place other group here
-			"/health": controller.ProvideHealthController(),
+			controller.ProvideHealthController(),
 		},
 	}
 
