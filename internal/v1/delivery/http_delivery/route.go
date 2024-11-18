@@ -41,6 +41,8 @@ func (h *HTTPDeliveryV1) initDefaulltMiddleware() {
 
 	h.echo.Use(apmechov4.Middleware())
 
+	h.echo.Use(middleware.LogRequest())
+
 	h.echo.Use(middleware.CompressWithConfig(middleware.CompressConfig{
 		Level:       middleware.CompressLevelDefault,
 		HandleError: true,
@@ -49,6 +51,4 @@ func (h *HTTPDeliveryV1) initDefaulltMiddleware() {
 	h.echo.Use(echoMiddleware.CSRF())
 
 	h.echo.Use(middleware.Decompress())
-
-	h.echo.Use(middleware.LogRequest())
 }
